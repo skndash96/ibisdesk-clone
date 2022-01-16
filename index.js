@@ -1,7 +1,8 @@
 const [undoBtn, redoBtn] = document.getElementById("actionBox").children;
 const [sizeMinusBtn, sizeTxt, sizePlusBtn] = document.getElementById("brushSizeBox").children;
 const [scaleMinusBtn, scalePlusBtn] = document.getElementById("canvasScaleBox").children;
-const [colorBtn, colors] = document.getElementById("colorBox").children;
+const colorBtn = document.getElementById("colorBox").firstElementChild;
+const colors = document.getElementById("colors");
 const toggleBrushBtn = document.getElementById("toggleBrushBtn");
 
 const canvas = document.getElementById("canvas");
@@ -109,6 +110,8 @@ function getCors(x, y, offX, offY) {
 
 
 function handleStart(evt) {
+  evt.preventDefault();
+
   for (let [key, value] of Object.entries(pathState)) {
     ctx[key] = value;
   };
@@ -129,6 +132,8 @@ function handleStart(evt) {
 
 
 function handleMove(evt) {
+  evt.preventDefault();
+
   if (logs.doubleTap) {
     if (evt.touches.length !== 2) return;
     
@@ -182,6 +187,8 @@ function handleMove(evt) {
 
 
 function handleEnd(evt) {
+  evt.preventDefault();
+
   if (logs.doubleTap) {
     logs.doubleTap = false;
     logs.ongoingAction = [];
@@ -208,12 +215,12 @@ if (app) {
     else colors.classList.add("hidden");
   });
   
-  //colors.children.forEach(el => {
-    //el.addEventListener("click", ({ target }) => {
-      //app.color = target.style.backgroundColor;
-      //colors.classList.add("hidden");
-    //})
-  //});
+  if (colors?.children) colors.children.forEach(el => {
+    el.addEventListener("click", ({ target }) => {
+      app.color = target.style.backgroundColor;
+      colors.classList.add("hidden");
+    })
+  });
   
   sizeMinusBtn.addEventListener("click", () => {
     app.lineWidth = pathState.lineWidth-1;
