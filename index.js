@@ -215,11 +215,11 @@ if (app) {
     else colors.classList.add("hidden");
   });
   
-  colors.children.forEach(el => {
+  if (Array.isArray(colors.children)) colors.children.forEach(el => {
     el.addEventListener("click", ({ target }) => {
       app.color = target.style.backgroundColor;
       colors.classList.add("hidden");
-    })
+    });
   });
   
   sizeMinusBtn.addEventListener("click", () => {
