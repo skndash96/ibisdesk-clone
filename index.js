@@ -163,7 +163,7 @@ function handleMove(evt) {
     let scaleTo = logs.prevScale*scaleAmt;
 
     let offX = (midX-pMidX)/scaleTo + logs.prevOffset[0],
-      offY = (midY-pMidY)/scaleTo + logs.prevOffset[1];
+      offY = (midY-pMidY)*1.5 + logs.prevOffset[1];
     
     app.scale = [
       scaleTo,
@@ -219,7 +219,7 @@ if (app) {
     else colors.classList.add("hidden");
   });
   
-  colors.children.forEach(el => {
+  colors.getElementsByClassName("color").forEach(el => {
     el.addEventListener("click", ({ target }) => {
       app.color = target.style.backgroundColor;
       colors.classList.add("hidden");
