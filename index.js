@@ -219,12 +219,13 @@ if (app) {
     else colors.classList.add("hidden");
   });
   
-  colors.getElementsByClassName("color").forEach(el => {
-    el.addEventListener("click", ({ target }) => {
+  let colorElems = colors.getElementsByClassName("color");
+  for (let i = 0; i < colorElems.length; i++) {
+    colorElems[i].addEventListener("click", ({ target }) => {
       app.color = target.style.backgroundColor;
       colors.classList.add("hidden");
     });
-  });
+  };
   
   sizeMinusBtn.addEventListener("click", () => {
     app.lineWidth = pathState.lineWidth-1;
