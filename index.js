@@ -215,7 +215,7 @@ if (app) {
     else colors.classList.add("hidden");
   });
   
-  if (colors?.children) colors.children.forEach(el => {
+  colors.children.forEach(el => {
     el.addEventListener("click", ({ target }) => {
       app.color = target.style.backgroundColor;
       colors.classList.add("hidden");
