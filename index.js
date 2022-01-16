@@ -110,6 +110,21 @@ function getCors(x, y) {
 }
 
 
+function drawTouches(touches) {
+  for (let touch of touches) {
+    let [x,y] = [touch.clientX, touch.clientY];
+    
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    
+    logs.ongoingAction.push([
+      x/logs.scale - logs.offset[0],
+      y/logs.scale - logs.offset[1]
+    ]);
+  }
+}
+
+
 function handleStart(evt) {
   evt.preventDefault();
 
@@ -175,18 +190,7 @@ function handleMove(evt) {
   } else if (
     evt.touches.length === 1 &&
     typeof logs.ongoingAction[0] === "object"
-  ) for (let touch of evt.changedTouches) {
-    let [x,y] = [touch.clientX, touch.clientY];
-    
-    ctx.lineTo(x, y);
-    ctx.moveTo(x, y);
-    ctx.stroke();
-    
-    logs.ongoingAction.push([
-      x/logs.scale - logs.offset[0],
-      y/logs.scale - logs.offset[1]
-    ]);
-  }
+  ) drawTouches(evt.changedTouches);
 }
 
 
@@ -241,6 +245,10 @@ if (app) {
       scaleTo,
       ...logs.offset
     ];
+  });
+  
+  scaleTxt.addEventListener("click", () => {
+    app.scale = [1, 0, 0];
   });
   
   scalePlusBtn.addEventListener("click", () => {

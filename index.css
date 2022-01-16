@@ -7,8 +7,8 @@
   display: flex;
   justify-content: center;
   gap: .75rem;
+  padding: .5rem 0;
   background: #838383;
-  padding: .5rem 1rem;
   position: fixed;
   top: 0;
   left: 0;
