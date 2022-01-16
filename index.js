@@ -1,6 +1,6 @@
 const [undoBtn, redoBtn] = document.getElementById("actionBox").children;
 const [sizeMinusBtn, sizeTxt, sizePlusBtn] = document.getElementById("brushSizeBox").children;
-const [scaleMinusBtn, scalePlusBtn] = document.getElementById("canvasScaleBox").children;
+const [scaleMinusBtn, scaleTxt, scalePlusBtn] = document.getElementById("canvasScaleBox").children;
 const colorBtn = document.getElementById("colorBox").firstElementChild;
 const colors = document.getElementById("colors");
 const toggleBrushBtn = document.getElementById("toggleBrushBtn");
@@ -22,7 +22,6 @@ const logs = {
   tool: "pencil",
   scale: 1,
   offset: [0, 0],
-  prevOffset: [0, 0],
   actions: [],
   undoneActions: [],
   ongoingAction: [],
@@ -38,13 +37,13 @@ class App {
     
     for (let action of arr) {
       for (let [key, value] of Object.entries(action[0])) {
-        if (!["offset"].includes(key)) ctx[key] = value;
+        ctx[key] = value;
       }
     
       ctx.beginPath();
       
       for (let [x, y] of action.slice(1)) {
-        ctx.lineTo(...getCors(x, y, ...action[0].offset));
+        ctx.lineTo(...getCors(x, y));
       }
       
       ctx.stroke();
@@ -86,6 +85,8 @@ class App {
     logs.scale = to;
     logs.offset = offset;
     
+    scaleTxt.textContent = to.toFixed(2);
+    
     app.redrawCanvas();
   }
 }
@@ -101,10 +102,10 @@ function setCanvas(evt) {
 }
 
 
-function getCors(x, y, offX, offY) {
+function getCors(x, y) {
   return [
-    (x+offX)*logs.scale-logs.offset[0],
-    (y+offY)*logs.scale-logs.offset[1]
+    (x+logs.offset[0])*logs.scale,
+    (y+logs.offset[1])*logs.scale
   ];
 }
 
@@ -123,10 +124,10 @@ function handleStart(evt) {
     
     logs.ongoingAction.push({
       ...pathState,
-      offset: logs.offset.map(i => i/logs.scale)
     });
   }
   
+  logs.prevScale = logs.scale;
   logs.prevOffset = logs.offset;
 }
 
@@ -159,15 +160,15 @@ function handleMove(evt) {
     let prevHypo = Math.sqrt(Math.pow(prevTouch1X-prevTouch2X, 2) + Math.pow(prevTouch1Y-prevTouch2Y, 2));
     
     let scaleAmt = hypo/prevHypo;
-    let scaleTo = scaleAmt/(1+logs.scale);
+    let scaleTo = logs.prevScale*scaleAmt;
 
-    let offX = (pMidX-midX)/scaleTo,
-      offY = (pMidY-midY)/scaleTo;
+    let offX = (midX-pMidX)/scaleTo + logs.prevOffset[0],
+      offY = (midY-pMidY)/scaleTo + logs.prevOffset[1];
     
     app.scale = [
       scaleTo,
-      offX + logs.prevOffset[0]*logs.scale,
-      offY + logs.prevOffset[1]*logs.scale
+      offX,
+      offY
     ];
     
     return;
@@ -181,7 +182,10 @@ function handleMove(evt) {
     ctx.moveTo(x, y);
     ctx.stroke();
     
-    logs.ongoingAction.push([x/logs.scale, y/logs.scale]);
+    logs.ongoingAction.push([
+      x/logs.scale - logs.offset[0],
+      y/logs.scale - logs.offset[1]
+    ]);
   }
 }
 
@@ -215,7 +219,7 @@ if (app) {
     else colors.classList.add("hidden");
   });
   
-  if (Array.isArray(colors.children)) colors.children.forEach(el => {
+  colors.children.forEach(el => {
     el.addEventListener("click", ({ target }) => {
       app.color = target.style.backgroundColor;
       colors.classList.add("hidden");
